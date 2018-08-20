@@ -1,4 +1,6 @@
 
+
+import org.apache.commons.csv.CSVRecord;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -7,7 +9,9 @@ import org.apache.pdfbox.pdmodel.interactive.form.*;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class Main {
     public static FieldManager fieldManager = new FieldManager();
@@ -15,8 +19,11 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 		PDDocument creditApp = null;
+		final String dir = System.getProperty("user.dir");
 		try {
-			creditApp = PDDocument.load(new File("E:\\Development\\creditmerge\\src\\main\\resources\\Consolidated Master Credit Application NEW.pdf"));
+			//creditApp = PDDocument.load(new File("E:\\Development\\creditmerge\\src\\main\\resources\\Consolidated Master Credit Application NEW.pdf"));
+			//creditApp = PDDocument.load(new File("E:\\Dropbox\\PageSt\\Mail Merge\\PSL Individual-Homeowner Rental Application.pdf"));
+			creditApp = PDDocument.load(new File(dir + "\\PSL Individual-Homeowner Rental Application.pdf"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -27,8 +34,33 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		fieldManager.setField(creditApp,"Street", "Test Corp");
-        creditApp.save("E:\\Development\\creditmerge\\src\\main\\resources\\Consolidated Master Credit Application OUT.pdf");
+		// fieldManager.setField(creditApp,"Street", "Test Corp");
+
+        CSVImport csvImport = new CSVImport();
+        CSVImport csvImport1 = new CSVImport();
+		CSVRecord inputRecordMap = csvImport.parseCSV(dir + "\\nf_subs_08_17_2018.csv");
+
+		String[] recordMapping = csvImport1.getFILE_HEADER_MAPPING();
+
+
+		System.out.printf("Size: %d\n", recordMapping.length);
+		int i;
+		for (i=0; i < recordMapping.length; i++) {
+			System.out.println("Loop-de-loop.");
+			System.out.printf("\nColumn %s: %s\n", recordMapping[i], inputRecordMap.get(recordMapping[i]));
+			fieldManager.setField(creditApp, recordMapping[i], inputRecordMap.get(recordMapping[i]));
+		}
+
+		creditApp.save(dir + "\\Individual Credit Application OUT.pdf");
+
+
+		System.out.printf("Record mapping 5: %s\n", recordMapping[5]);
+		System.out.printf("Record value: %s\n", inputRecordMap.get("Mailing_Address"));
+
+		for (i=0; i < recordMapping.length; i++) {
+			System.out.printf("Record value %d: %s\n", i, inputRecordMap.get(recordMapping[i]));
+		}
+
 
 	}
 
