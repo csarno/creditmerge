@@ -20,6 +20,9 @@ public class Main {
 
 		PDDocument creditApp = null;
 		final String dir = System.getProperty("user.dir");
+		String inputFilename = "";
+		String outputName = "";
+
 		try {
 			//creditApp = PDDocument.load(new File("E:\\Development\\creditmerge\\src\\main\\resources\\Consolidated Master Credit Application NEW.pdf"));
 			//creditApp = PDDocument.load(new File("E:\\Dropbox\\PageSt\\Mail Merge\\PSL Individual-Homeowner Rental Application.pdf"));
@@ -34,11 +37,16 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		// fieldManager.setField(creditApp,"Street", "Test Corp");
+		try {
+			inputFilename = args[0];
+			outputName = args[1];
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 
         CSVImport csvImport = new CSVImport();
         CSVImport csvImport1 = new CSVImport();
-		CSVRecord inputRecordMap = csvImport.parseCSV(dir + "\\nf_subs_08_17_2018.csv");
+		CSVRecord inputRecordMap = csvImport.parseCSV(dir + "\\" + inputFilename);
 
 		String[] recordMapping = csvImport1.getFILE_HEADER_MAPPING();
 
@@ -51,7 +59,7 @@ public class Main {
 			fieldManager.setField(creditApp, recordMapping[i], inputRecordMap.get(recordMapping[i]));
 		}
 
-		creditApp.save(dir + "\\Individual Credit Application OUT.pdf");
+		creditApp.save(dir + "\\Individual Credit Application " + outputName + ".pdf");
 
 
 		System.out.printf("Record mapping 5: %s\n", recordMapping[5]);
